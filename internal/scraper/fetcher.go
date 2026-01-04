@@ -106,7 +106,7 @@ func (f *Fetcher) fetchOnce(urlStr string) (*WebPage, error) {
 	c.Wait()
 
 	if errorMsg != "" {
-		return nil, fmt.Errorf(errorMsg)
+		return nil, fmt.Errorf("%s", errorMsg)
 	}
 
 	// 验证内容

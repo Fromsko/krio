@@ -45,10 +45,13 @@ type AppConfig struct {
 
 // ScraperConfig 网页抓取配置
 type ScraperConfig struct {
-	UserAgent   string        `yaml:"user_agent"`
-	Timeout     time.Duration `yaml:"timeout"`
-	MaxRetries  int           `yaml:"max_retries"`
-	RetryDelay  time.Duration `yaml:"retry_delay"`
+	UserAgent      string        `yaml:"user_agent"`
+	Timeout        time.Duration `yaml:"timeout"`
+	MaxRetries     int           `yaml:"max_retries"`
+	RetryDelay     time.Duration `yaml:"retry_delay"`
+	EnableCache    bool          `yaml:"enable_cache"`
+	CacheTTL       time.Duration `yaml:"cache_ttl"`
+	MaxConcurrency int           `yaml:"max_concurrency"`
 }
 
 // NoteConfig 笔记生成配置

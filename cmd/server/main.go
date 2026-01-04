@@ -42,13 +42,13 @@ func main() {
 	)
 
 	// 4. 创建工具
-	webNoteTool, err := tool.NewSaveWebNoteTool(cfg)
+	ctx := context.Background()
+	webNoteTool, err := tool.NewSaveWebNoteTool(ctx, cfg)
 	if err != nil {
 		log.Fatal("创建工具失败", zap.Error(err))
 	}
 
 	// 5. 演示使用
-	ctx := context.Background()
 	demo(ctx, webNoteTool)
 
 	log.Info("应用退出")
@@ -82,13 +82,17 @@ func demo(ctx context.Context, webNoteTool *tool.SaveWebNoteTool) {
 		zap.String("file_path", resp.FilePath),
 	)
 
-	// 打印笔记内容
-	separator := "--------------------------------------------------------------------------------"
-	fmt.Println("\n" + separator)
-	fmt.Println("生成的笔记内容:")
-	fmt.Println(separator)
-	fmt.Println(resp.Content)
-	fmt.Println(separator)
+	// 只在成功时打印笔记内容
+	if resp.Success {
+		separator := "--------------------------------------------------------------------------------"
+		fmt.Println("\n" + separator)
+		fmt.Println("生成的笔记内容:")
+		fmt.Println(separator)
+		fmt.Println(resp.Content)
+		fmt.Println(separator)
+		fmt.Printf("✅ 笔记已保存到: %s\n", resp.FilePath)
+		fmt.Println(separator)
+	}
 }
 
 // setupSignalHandling 设置信号处理
