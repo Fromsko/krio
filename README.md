@@ -14,6 +14,23 @@
   - 智能缓存机制 (100 倍缓存命中速度)
   - 可配置的并发数和 TTL
 - 🔧 **易于配置**: YAML 配置文件,支持环境变量覆盖
+- 📦 **开箱即用**: 提供预编译二进制文件,无需配置 Go 环境
+
+## 📦 下载预编译版本
+
+访问 [Releases 页面](https://github.com/fromsko/krio/releases) 下载适合你系统的版本：
+
+- **Linux AMD64**: `krio-*-linux-amd64.tar.gz`
+- **Linux ARM64**: `krio-*-linux-arm64.tar.gz`
+- **macOS Intel**: `krio-*-darwin-amd64.tar.gz`
+- **macOS Apple Silicon**: `krio-*-darwin-arm64.tar.gz`
+- **Windows**: `krio-*-windows-amd64.zip`
+
+或者使用 `go install` 安装：
+
+```bash
+go install github.com/fromsko/krio@latest
+```
 
 ## 🚀 快速开始
 
