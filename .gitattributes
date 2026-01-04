@@ -1,0 +1,20 @@
+# 版本文件
+.version export-subst
+
+# Go 语言文件
+*.go linguist-language=Go
+*.go text eol=lf
+
+# Markdown 文件
+*.md text eol=lf
+
+# YAML 文件
+*.yaml text eol=lf
+*.yml text eol=lf
+
+# Shell 脚本
+*.sh text eol=lf
+
+# Windows 文件
+*.bat text eol=crlf
+*.ps1 text eol=crlf

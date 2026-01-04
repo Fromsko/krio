@@ -1,0 +1,115 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.version'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Read version
+        id: version
+        run: |
+          VERSION=$(cat .version)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Releasing version: $VERSION"
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+          cache: true
+
+      - name: Build for multiple platforms
+        run: |
+          VERSION=${{ steps.version.outputs.version }}
+          mkdir -p dist
+
+          # Build for Linux
+          GOOS=linux GOARCH=amd64 go build -ldflags="-X 'github.com/fromsko/krio/app.Version=$VERSION'" -o dist/krio-linux-amd64 .
+          GOOS=linux GOARCH=arm64 go build -ldflags="-X 'github.com/fromsko/krio/app.Version=$VERSION'" -o dist/krio-linux-arm64 .
+
+          # Build for macOS
+          GOOS=darwin GOARCH=amd64 go build -ldflags="-X 'github.com/fromsko/krio/app.Version=$VERSION'" -o dist/krio-darwin-amd64 .
+          GOOS=darwin GOARCH=arm64 go build -ldflags="-X 'github.com/fromsko/krio/app.Version=$VERSION'" -o dist/krio-darwin-arm64 .
+
+          # Build for Windows
+          GOOS=windows GOARCH=amd64 go build -ldflags="-X 'github.com/fromsko/krio/app.Version=$VERSION'" -o dist/krio-windows-amd64.exe .
+
+      - name: Create archives
+        run: |
+          VERSION=${{ steps.version.outputs.version }}
+          cd dist
+
+          # Create tar.gz for Unix-like systems
+          tar -czf krio-${VERSION}-linux-amd64.tar.gz krio-linux-amd64
+          tar -czf krio-${VERSION}-linux-arm64.tar.gz krio-linux-arm64
+          tar -czf krio-${VERSION}-darwin-amd64.tar.gz krio-darwin-amd64
+          tar -czf krio-${VERSION}-darwin-arm64.tar.gz krio-darwin-arm64
+
+          # Create zip for Windows
+          zip krio-${VERSION}-windows-amd64.zip krio-windows-amd64.exe
+
+      - name: Generate release notes
+        id: release_notes
+        run: |
+          VERSION=${{ steps.version.outputs.version }}
+          cat > release-notes.md << 'EOF'
+          ## Krio $VERSION
+
+          ### 📦 下载说明
+
+          选择适合你系统的版本：
+
+          - **Linux AMD64**: `krio-*-linux-amd64.tar.gz`
+          - **Linux ARM64**: `krio-*-linux-arm64.tar.gz`
+          - **macOS Intel**: `krio-*-darwin-amd64.tar.gz`
+          - **macOS Apple Silicon**: `krio-*-darwin-arm64.tar.gz`
+          - **Windows**: `krio-*-windows-amd64.zip`
+
+          ### 🚀 快速开始
+
+          1. 下载并解压对应平台的二进制文件
+          2. 复制 `config.example.yaml` 为 `config.yaml`
+          3. 编辑 `config.yaml` 填入你的 API Key 和配置
+          4. 运行: `./krio init` 初始化配置
+          5. 运行: `./krio run -u <URL>` 开始使用
+
+          ### 📚 文档
+
+          完整使用文档请参考: [README.md](https://github.com/fromsko/krio/blob/main/README.md)
+
+          ### ✨ 主要功能
+
+          - 🤖 AI 驱动的智能网页内容提取和总结
+          - 📝 自动生成结构化的 Markdown 笔记
+          - 🔗 支持 Obsidian MCP 直接保存
+          - 📁 支持从 .txt 和 .md 文件批量导入 URL
+          - ⚡ 并发抓取和智能缓存
+          - 🎯 完整的 CLI 工具 (init, run, cache, config, version)
+
+          EOF
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ steps.version.outputs.version }}
+          name: v${{ steps.version.outputs.version }}
+          body_path: release-notes.md
+          files: |
+            dist/krio-*.tar.gz
+            dist/krio-*.zip
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

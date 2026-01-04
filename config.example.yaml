@@ -25,7 +25,7 @@ obsidian_mcp:
     - "--no-cache"
     - "@andysama/obsidian-mcp-server"
     - "--vault"
-    - "D:/notes/Fromsko"
+    - "/path/to/your/vault"  # 修改为你的 Obsidian vault 路径
   # 超时时间 (秒)
   timeout: 30
 

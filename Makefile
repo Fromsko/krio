@@ -1,11 +1,19 @@
-.PHONY: help dev build run test clean install-tools lint fmt deps
+.PHONY: help dev build run test clean install-tools lint fmt deps cli build-release
+
+# 读取版本号
+VERSION ?= $(shell cat .version 2>/dev/null || echo "dev")
+GIT_COMMIT ?= $(shell git rev-parse --short HEAD 2>/dev/null || echo "unknown")
+BUILD_DATE ?= $(shell date -u +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null || date)
+LDFLAGS = -ldflags "-X 'github.com/fromsko/krio/app.Version=$(VERSION)' -X 'github.com/fromsko/krio/app.Commit=$(GIT_COMMIT)' -X 'github.com/fromsko/krio/app.BuildDate=$(BUILD_DATE)'"
 
 # 默认目标
 help:
 	@echo "可用命令:"
+	@echo "  make cli         - 构建 CLI 工具"
+	@echo "  make build-release - 构建发布版本 (带版本信息)"
 	@echo "  make dev         - 启动开发模式 (热重载)"
-	@echo "  make build       - 构建项目"
-	@echo "  make run         - 运行程序"
+	@echo "  make build       - 构建演示程序"
+	@echo "  make run         - 运行演示程序"
 	@echo "  make test        - 运行测试"
 	@echo "  make clean       - 清理构建文件"
 	@echo "  make fmt         - 格式化代码"
@@ -13,20 +21,44 @@ help:
 	@echo "  make deps        - 安装依赖"
 	@echo "  make install-tools- 安装开发工具"
 
+# 构建 CLI 工具
+cli:
+	@echo "🔨 构建 CLI 工具..."
+	@go build $(LDFLAGS) -o krio.exe .
+	@echo "✅ 构建完成: krio.exe"
+	@echo ""
+	@echo "📝 使用方法:"
+	@echo "  ./krio.exe init              # 初始化配置"
+	@echo "  ./krio.exe run -u <url>      # 处理单个 URL"
+	@echo "  ./krio.exe run -r <file>     # 批量处理文件"
+	@echo "  ./krio.exe cache stats       # 查看缓存统计"
+	@echo "  ./krio.exe version           # 查看版本信息"
+	@echo ""
+
+# 构建发布版本
+build-release:
+	@echo "🔨 构建发布版本..."
+	@echo "版本: $(VERSION)"
+	@echo "提交: $(GIT_COMMIT)"
+	@echo "日期: $(BUILD_DATE)"
+	@go build $(LDFLAGS) -o krio .
+	@echo "✅ 构建完成: krio"
+	@./krio version
+
 # 开发模式 (热重载)
 dev:
 	@echo "🚀 启动开发模式..."
 	@air
 
-# 构建
+# 构建演示程序
 build:
-	@echo "🔨 构建项目..."
+	@echo "🔨 构建演示程序..."
 	@go build -o bin/server.exe ./cmd/server
 	@echo "✅ 构建完成: bin/server.exe"
 
-# 运行
+# 运行演示程序
 run: build
-	@echo "▶️  运行程序..."
+	@echo "▶️  运行演示程序..."
 	@./bin/server.exe
 
 # 测试

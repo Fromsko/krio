@@ -1,0 +1,5 @@
+# 真实 URL 测试列表
+https://kilo.ai/docs/zh-CN/cli
+https://zhuanlan.zhihu.com/p/1986353756728746429
+https://sven-chr.github.io/myblog/2025/10/14/2025-10-14-openspec-spec-driven-development-guide/
+https://www.runoob.com/markdown/md-draw.html
