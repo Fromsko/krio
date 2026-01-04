@@ -33,15 +33,23 @@ cd krio
 # 安装依赖
 go mod download
 
-# 配置 API Key
-cp config.example.yaml config.yaml
-# 编辑 config.yaml,填入你的 API Key
+# 构建 CLI 工具
+make cli
 
-# 构建
-make build
+# 或使用 go build
+go build -o krio.exe .
 
-# 运行
-./bin/server.exe
+# 初始化配置
+./krio.exe init
+```
+
+### 配置
+
+编辑生成的配置文件 (`~/.krio.yaml` 或 `config.yaml`):
+
+```yaml
+model:
+  api_key: "your-api-key"  # 填入你的智云 API Key
 ```
 
 ### 开发模式
@@ -56,10 +64,38 @@ make dev
 
 ## 📖 使用方法
 
-### 单个 URL 处理
+### CLI 命令行工具
 
 ```bash
-# 直接运行程序 (单个 URL 演示)
+# 查看帮助
+./krio.exe --help
+
+# 初始化配置
+./krio.exe init
+
+# 处理单个 URL
+./krio.exe run -u https://example.com
+
+# 批量处理文件
+./krio.exe run -r urls.txt
+
+# 自定义标签和文件夹
+./krio.exe run -u https://example.com -t "tech,ai" -f "Articles"
+
+# 查看缓存统计
+./krio.exe cache stats
+
+# 清空缓存
+./krio.exe cache clear
+
+# 查看版本信息
+./krio.exe version
+```
+
+### 单个 URL 处理 (旧方式)
+
+```bash
+# 运行演示程序
 ./bin/server.exe
 ```
 
@@ -141,7 +177,7 @@ obsidian_mcp:
     - "--no-cache"
     - "@andysama/obsidian-mcp-server"
     - "--vault"
-    - "D:/notes/Fromsko"
+    - "/path/to/your/vault"  # 修改为你的 Obsidian vault 路径
   timeout: 30s
 
 # 应用配置

@@ -78,19 +78,23 @@ func (g *Generator) generateContent(summary *summarizer.Summary) string {
 	// 一句话总结
 	sb.WriteString(fmt.Sprintf("> %s\n\n", summary.OneSentence))
 
-	// 关键要点
+	// 核心要点
 	if len(summary.KeyPoints) > 0 {
-		sb.WriteString("## 核心要点\n\n")
-		for _, point := range summary.KeyPoints {
-			sb.WriteString(fmt.Sprintf("- %s\n", point))
+		sb.WriteString("## 📌 核心要点\n\n")
+		for i, point := range summary.KeyPoints {
+			sb.WriteString(fmt.Sprintf("%d. %s\n", i+1, point))
 		}
 		sb.WriteString("\n")
 	}
 
-	// 详细内容 (可选)
-	// sb.WriteString("## 详细内容\n\n")
-	// sb.WriteString(summary.OriginalContent)
-	// sb.WriteString("\n")
+	// AI 生成的标签
+	if len(summary.Tags) > 0 {
+		sb.WriteString("## 🏷️ 标签\n\n")
+		for _, tag := range summary.Tags {
+			sb.WriteString(fmt.Sprintf("- %s\n", tag))
+		}
+		sb.WriteString("\n")
+	}
 
 	return sb.String()
 }
